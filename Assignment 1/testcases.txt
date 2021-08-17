@@ -1,0 +1,34 @@
+Workload plans and justification
+
+D: Start at size 1 and keep iterating until the maximum allowed size for malloc
+	for each iteration, malloc the current size and immediately free it 
+	since our malloc allows for a maximum mallocation of 4093, malloc then immediately free every number in the range 1 to 4093
+
+
+This workload tests that our malloc and free can handle any possible given malloc size and any free of any malloc'd pointer.
+By testing every possible size allocation, we can see that our my malloc can handle any given input(as long as it fits into the array) and we
+also see that myfree works by resetting given pointers to array. In doing so, we also test for any possible errors of free not actually freeing meta data,
+because should the workload ever return an error, it would mean that either free is not working correctly, or we didn't start with a fully clear memory array
+
+By doing this for every possible input size we fully test the capabilities of myfree and mymalloc in this context.
+
+
+E: Malloc 254 bytes and save the pointers in an array 15 times and then malloc 253 bytes and save the pointer once more
+	memory is now at MAXIMUM allocation
+	then 15 times
+	-free a pointer from the initial array
+	-malloc 127 bytes(half of 254) and save pointer in a second array
+	-malloc 125 bytes(half of 254 -2 bytes for metadata) in a third array
+	* then once more do the last 3 items (free 253 bytes then malloc 126 and 124 bytes)
+	finally, free every pointer in second then third pointer arrays
+
+This workload puts to test the merging capabilities of free and ensures that malloc is working correctly.
+Firstly, We completely saturate our memory with mallocs of a fixed size(or close to fixed if the math doesn't completely work out).
+After doing so, we free the blocks and remallocate the halves of each block(the first half to a pointer array and the second half to a second pointer array.
+This step stress tests the capabilities of malloc to find suitable metadatas as we make sure that malloc is allocating the correct sizes of data, even when 
+the differences are less than a few bytes. This ensures that malloc is not wasting any space even when working with freed data throughout memory. 
+After this step, we then free all of the second pointer array such that the memory array now follows the pattern, free space, malloc'd space, free space, malloc'd space, and so on
+we then free every left over malloc'd pointers from the third array.
+This specifically tests that the merging in myfree is working correctly. By continuously freeing malloc'd space between freed space, we encounter the cases for free merging and ensure that 
+each case works
+At the end of this step, the user should be left with a completely free memory array.
