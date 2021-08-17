@@ -1,0 +1,52 @@
+Test Case #1
+
+write(sock, "R", strlen("R"));
+write(sock, "E", strlen("E"));
+write(sock, "G", strlen("G"));
+write(sock, "|", strlen("|"));
+write(sock, "1", strlen("1"));
+write(sock, "2", strlen("2"));
+write(sock, "|", strlen("|"));
+write(sock, "Who's", strlen("Who's"));
+write(sock, " there?", strlen(" there?"));
+write(sock, "|", strlen("|"));
+
+This test case is used for testing the read() function of the code to determine if it can accept multiple writes in order to assemble a regular message. In this assignment, read() is supposed to continually read writes() until either
+the last pipe ("|") has been sent or the connection between client and server was disconnected.
+
+Test Case #2
+
+write(sock, "R", strlen("R"));
+write(sock, "E", strlen("E"));
+write(sock, "G", strlen("G"));
+write(sock, "|BANANA|", strlen("|BANANA|"));
+write(sock, "wat the", strlen("wat the"));
+write(sock, ".|", strlen(".|"));
+
+This test case is used to test the error catching functionality of the code. In this case, writing REG|BANANA|wdf man| would result in both a length error because BANANA is a not a numeric value & since this is the message for the A/D/S, the message
+is supposed to end in a punctuation. This should cause the client to invoke a format error because the hierarchy of reporting errors is format > length > message content.
+
+Test Case #3
+write(sock, "R", strlen("R"));
+write(sock, "E", strlen("E"));
+write(sock, "G", strlen("G"));
+write(sock, "|", strlen("|"));
+write(sock, "10", strlen("10"));
+write(sock, "|Joe", strlen("|Joe"));
+write(sock, ", who!|", strlen(", who!|"));
+
+This test case is used to test the error catching functionality of the code, in specific the message content error. In this case, writing REG|10|Joe, who!!| would result in a message content error and not a length message error because despite the 
+fact that the "10" value is supposed to be a "9" because the correct message is REG|9|Joe, who?|, the "10" value is equal to the length of the message given. It is then a message error because as stated in the assignment, the message has to be 
+<punch-line>, who?
+
+Test Case #4
+
+write(sock, "REG|9|Joe, who?", strlen("REG|9|Joe, who?"));
+
+This test case is used to test the read() stalling timeout function of the code. Since in this test case, the last pipe is never sent, the server should stall and read() should block until either the last pipe is sent or the client closes the connection.
+
+Test Case #5
+
+write(sock, "|||", strlen("|||"));
+
+This test case is used to test where or not the string parsing method will work if there are only pipes and no actual messages. The correct error that would be outputted a format error.
